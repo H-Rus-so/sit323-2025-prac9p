@@ -1,59 +1,48 @@
-# SIT323-2025-Prac6C: Interacting with Kubernetes
+# SIT323-2025-Prac9P: MongoDB Integration with Kubernetes Microservice
 
 ## Overview
+This project builds on earlier work by adding a MongoDB database to a Node.js microservice. The microservice runs in a Kubernetes cluster and supports all basic CRUD operations. MongoDB is set up using a StatefulSet with persistent storage and is secured with Kubernetes secrets.
 
-This task builds on Task 6.1P. I updated the Node.js microservice content and interacted with the deployed container using Kubernetes CLI commands. The goal was to verify the app is running, access it through port forwarding, and demonstrate understanding of how Kubernetes manages application pods and updates.
+## Features
+The application includes full CRUD functionality using Express, connects to MongoDB through the official Node.js mongodb client, and uses Kubernetes secrets to handle database credentials. It also includes liveness and readiness probes to monitor the service’s health. Backups of the MongoDB database are automatically created daily using a CronJob that stores them in a PersistentVolumeClaim (PVC). There's also a simple styled HTML page at /data that displays stored entries.
 
-## Files Included
+## How to Use
 
-- `index.js`: Updated Node.js microservice with task summary and styling
-- `Dockerfile`: Used to build the container
-- `deployment.yaml`: Kubernetes Deployment config
-- `service.yaml`: Kubernetes Service config
-- `README.md`: This file
+### What you'll need
+- Docker + Kubernetes (Docker Desktop or Minikube)
+- kubectl configured
+- MongoDB secret created (`mongo-secret.yaml`)
+- PersistentVolume and PVC (`mongo-pv-pvc.yaml`)
+- ClusterIP service + StatefulSet for Mongo (`mongo-service.yaml`, `mongo-statefulset.yaml`)
+- Docker image pushed to Container Registry
+- All manifests applied using `kubectl apply`
 
-## Steps Taken
+### How to Deploy and Access the App
 
-### 1. Updated the Microservice
-
-I modified `index.js` to include more relevant information about the task, added styling, and applied a pop of pink for visual improvement. This change was made to reflect the learning outcomes of this credit-level task.
-
-### 2. Rebuilt and Pushed the Updated Image
-
-```bash
-docker build -t gcr.io/cloud-native-microservice/task5:latest .
-docker push gcr.io/cloud-native-microservice/task5:latest
-```
-
-### 3. Restarted the Deployment
+Run the following commands to deploy everything:
 
 ```bash
+kubectl apply -f k8s/
+kubectl apply -f deployment.yaml
+kubectl apply -f service.yaml
 kubectl rollout restart deployment my-microservice-deployment
 ```
 
-### 4. Verified the Deployment
-
-```bash
-kubectl get pods
-```
-
-### 5. Port Forwarded the Service
+Then, to access the app in your browser, use port forwarding:
 
 ```bash
 kubectl port-forward service/my-microservice-service 3000:3000
 ```
 
-Then accessed the app in the browser at:
+Visit these URLs:
 
-```bash
-http://localhost:3000
-```
+Main app: http://localhost:3000
 
-### Notes
+View data: http://localhost:3000/data
 
-Kubernetes was run locally via Docker Desktop.
-The application was successfully updated, redeployed, and accessed using kubectl commands.
+Health check: http://localhost:3000/health
 
-### Author
 
+
+Author
 Hope Russo
